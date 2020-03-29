@@ -19,6 +19,9 @@ def refresh():
     data = soup.select("#main_table_countries_today > tbody:nth-child(2)")[0]
     statistics = {}
     country_labels = []
+    country_labels.append("Global")
+    g = [infected, "N/A", dead, "N/A", recovered, "N/A", "N/A", "N/A", "N/A"]
+    statistics["Global"] = g
     for a in data:
         if(len(a) == 1):
             continue
