@@ -4,7 +4,9 @@ A quick and dirty python script to get information for specific countries regard
 Using requests, urwid and BeautifulSoup
 
 pip install requests
+
 pip install urwid
+
 pip install beautifulsoup4
 
 Run using "python covid.py" or chmod +x and run "./covid.py"
