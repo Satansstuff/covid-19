@@ -3,7 +3,8 @@
 import requests
 import urwid
 from bs4 import BeautifulSoup
-
+import json
+from decimal import Decimal
 def refresh(_loop, _data):
     main_loop.draw_screen()
     quote_box.base_widget.set_text(get_update())
@@ -55,15 +56,20 @@ def menu(title = "boi"):
     return urwid.ListBox(urwid.SimpleFocusListWalker(body))
 
 def item_chosen(button, choice):
-    infected = "\nTotal infected: " + choices[1][choice][0] + "\n"
-    
-    new_infected = "Newly infected: " + choices[1][choice][1] + "\n"
-    dead = "Total deaths: " + choices[1][choice][2] + "\n"
-    new_dead = "New deaths: " + choices[1][choice][3] + "\n"
+    req = requests.get("https://restcountries.eu/rest/v2/name/" + choice)
+    pop = json.loads(req.text)
+    infected = "\nTotal infected: " + choices[1][choice][0] + " | " + choices[1][choice][1] + "\n"
+    dead = "Total deaths: " + choices[1][choice][2] + " | " + choices[1][choice][3] + "\n"
     recovered = "Total recovered: " + choices[1][choice][4] + "\n"
     active = "Active cases: " + choices[1][choice][5] + "\n"
     serious = "Serious cases: " + choices[1][choice][6] + "\n"
-    pstring = infected + new_infected + dead + new_dead + recovered + active + serious
+    if(req.status_code != 404):
+        dead_int = int(choices[1][choice][2].replace(",", "", 1))
+        death_percentage = round(Decimal(dead_int / pop[0]["population"]),8)
+        death_str = "Death percentage: " + str(death_percentage) + "%" + "\n"
+    else:
+        death_str = "Death percentage: " + "Not available" + "\n"
+    pstring = infected + dead + death_str + recovered + active + serious
     response = urwid.Text([pstring])
     done = urwid.Button(u'Ok')
     urwid.connect_signal(done, 'click', exit_program)
