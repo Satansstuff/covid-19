@@ -4,6 +4,8 @@ import requests
 import urwid
 from bs4 import BeautifulSoup
 import json
+import sys
+
 from decimal import Decimal
 def refresh(_loop, _data):
     main_loop.draw_screen()
@@ -14,9 +16,9 @@ def refresh():
     delim = ','
     page = requests.get('https://www.worldometers.info/coronavirus/').text
     soup = BeautifulSoup(page, 'html.parser')
-    infected = soup.select(".content-inner > div:nth-child(7) > div:nth-child(2) > span:nth-child(1)")[0].string.extract().replace(',', ' ', 1)
-    dead = soup.select(".content-inner > div:nth-child(9) > div:nth-child(2) > span:nth-child(1)")[0].string.extract().replace(',', ' ', 1)
-    recovered = soup.select(".content-inner > div:nth-child(10) > div:nth-child(2) > span:nth-child(1)")[0].string.extract().replace(',', ' ', 1)
+    infected = soup.select(".content-inner > div:nth-child(7) > div:nth-child(2) > span:nth-child(1)")[0].string.extract()
+    dead = soup.select(".content-inner > div:nth-child(9) > div:nth-child(2) > span:nth-child(1)")[0].string.extract()
+    recovered = soup.select(".content-inner > div:nth-child(10) > div:nth-child(2) > span:nth-child(1)")[0].string.extract()
     data = soup.select("#main_table_countries_today > tbody:nth-child(2)")[0]
     statistics = {}
     country_labels = []
@@ -79,10 +81,22 @@ def item_chosen(button, choice):
 def exit_program(button):
     raise urwid.ExitMainLoop()
 
-main = urwid.Padding(menu(u'Pick a country'), left=2, right=2)
-top = urwid.Overlay(main, urwid.SolidFill(u'\N{MEDIUM SHADE}'),
-    align='center', width=('relative', 60),
-    valign='middle', height=('relative', 60),
-    min_width=20, min_height=9)
-urwid.MainLoop(top, palette=[('reversed', 'standout', '')]).run()
 
+total = len(sys.argv)
+cmdargs = str(sys.argv)
+
+if(total <= 2):
+    main = urwid.Padding(menu(u'Pick a country'), left=2, right=2)
+    top = urwid.Overlay(main, urwid.SolidFill(u'\N{MEDIUM SHADE}'),
+        align='center', width=('relative', 60),
+        valign='middle', height=('relative', 60),
+        min_width=20, min_height=9)
+    urwid.MainLoop(top, palette=[('reversed', 'standout', '')]).run()
+else:
+    for i in choices[0]:
+        if(i.lower() == str(sys.argv[1]).lower()):
+            cmd = str(sys.argv[2]).lower()
+            if(cmd == "infected"):
+                print(choices[1][i][0].replace(",","",1))
+            elif(cmd == "dead"):
+                print(choices[1][i][2].replace(",","",1))
