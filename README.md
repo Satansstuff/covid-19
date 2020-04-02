@@ -11,3 +11,6 @@ pip install beautifulsoup4
 
 Run using "python covid.py" or chmod +x and run "./covid.py"
 
+Alternatively use ./covid.py country {infected/dead} to get information printed to stdout
+
+
